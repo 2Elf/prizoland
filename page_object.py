@@ -4,8 +4,8 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 import time
 
-class PagePattern():
 
+class PagePattern():
     def __init__(self, driver):
         self.driver = driver
 
@@ -35,7 +35,6 @@ class MainPage(PagePattern):
     panda_begin_link_text = 'Начать'
 
 
-
     def __init__(self, driver, start_url):
         PagePattern.__init__(self, driver)
         self.go_page(start_url)
@@ -43,7 +42,7 @@ class MainPage(PagePattern):
 
 
     def login_with(self, sn_name='Facebook'):
-        if sn_name in ['fb', 'FB' ]:
+        if sn_name in ['fb', 'FB']:
             sn_name = 'Facebook'
         elif sn_name in ['Vk', 'vk']:
             sn_name = 'Вконтакте'
@@ -69,6 +68,7 @@ class MainPage(PagePattern):
         self.driver.find_element_by_link_text(MainPage.panda_continue_link_text).click()
         return PandaMain(self.driver)
 
+
 class BubbleCookingMain(PagePattern):
     '''
 
@@ -81,6 +81,7 @@ class BubbleCookingMain(PagePattern):
         '''
         self.driver.find_element_by_link_text(BubbleCookingMain.continue_link_text).click()
         return AchivesPage(self.driver)
+
 
 class PandaMain(PagePattern):
     '''
@@ -95,6 +96,7 @@ class PandaMain(PagePattern):
         '''
         self.driver.find_element_by_link_text(PandaMain.continue_link_text).click()
         return AchivesPage(self.driver)
+
 
 class AchivesPage(PagePattern):
     '''
@@ -124,7 +126,6 @@ class AchivesPage(PagePattern):
         return money_element.text
 
 
-
 class Achivement:
     achivement_key_xpath_pattern = "//article[@data-key='{0}']"
     description_css_selector = 'div.achievement__description.ng-binding'
@@ -145,10 +146,10 @@ class Achivement:
         actions.move_to_element(self.ref).perform()
         actions.release(self.ref).perform()
         actions.move_to_element(self.ref).perform()
-        self.description = self.ref.find_element_by_css_selector(\
-                                    Achivement.description_css_selector)
-        self.sub_description = self.ref.find_element_by_css_selector(\
-                                    Achivement.sub_description_css_selector)
+        self.description = self.ref.find_element_by_css_selector( \
+            Achivement.description_css_selector)
+        self.sub_description = self.ref.find_element_by_css_selector( \
+            Achivement.sub_description_css_selector)
         actions.release(self.ref).perform()
         actions.move_to_element(self.ref).perform()
         self.progress_icon = self.ref.find_element_by_class_name(Achivement.progress_class_name)
@@ -169,8 +170,8 @@ class Achivement:
             It returns achivement text ( see detail in http://clip2net.com/s/6u4O0f )
             excluding bottom_text and progress_icon_text
         '''
-        text = self.text.replace(self.bottom.text,'').strip()
-        text = text.replace(self.get_progress_text(),'').strip()
+        text = self.text.replace(self.bottom.text, '').strip()
+        text = text.replace(self.get_progress_text(), '').strip()
         return text
 
     def get_money_cost(self):
@@ -188,7 +189,7 @@ class Achivement:
         '''
         sub_description_text = self.get_sub_description_text()
         text = self.description.text
-        text = text.replace(sub_description_text,'').strip()
+        text = text.replace(sub_description_text, '').strip()
         return text
 
     def get_sub_description_text(self):

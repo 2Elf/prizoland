@@ -10,17 +10,16 @@ import time
 LOGIN = "79670452475"
 PASSWORD = "C3NPWqjRe"
 SOCIAL_NETWORK = 'vk'
-TESTED_URL = 'http://rc.prizoland.com'
+TESTED_URL = 'http://prizoland.com'
 CONFIG_PATH = 'achives_data.cfg'
 
 
 class TestCase(unittest.TestCase):
-
     @staticmethod
     def setUpClass():
         driver = webdriver.Firefox()
         driver.implicitly_wait(60)
-        loging_instance = Loginer(LOGIN , PASSWORD, SOCIAL_NETWORK,  driver)
+        loging_instance = Loginer(LOGIN, PASSWORD, SOCIAL_NETWORK, driver)
         loging_instance.log_in()
         main_page = MainPage(driver, TESTED_URL)
         main_page = main_page.login_with(SOCIAL_NETWORK)
@@ -72,8 +71,8 @@ class TestCase(unittest.TestCase):
             with open(CONFIG_PATH, 'wb') as configfile:
                 config.write(configfile)
             self.fail('Config file doesn\'t contain values for achivment with {0} data-key'
-                            .format(key))
-        #  Get expected results from config file
+            .format(key))
+            #  Get expected results from config file
         expected_text = config.get(key, text_field_name)
         expected_description_text = config.get(key, description_field_name)
         expected_sub_description_text = config.get(key, sub_description_field_name)
@@ -84,25 +83,28 @@ class TestCase(unittest.TestCase):
         if achivement.is_completed():
             expected_button_text = ''
             expected_money_costs = ''
-        #  compare actual and expected results
+            #  compare actual and expected results
         self.assertEqual(expected_text, actual_text,
                          'Expected text for {0}: "{1}" != Acual: "{2}"'.format(key, expected_text,
-                                                                   actual_text))
+                                                                               actual_text))
         self.assertEqual(expected_description_text, actual_description_text,
-                         'Expected description_text for {0}: "{1}" != Acual: "{2}"'.format(key, expected_description_text,
-                                                                   actual_description_text))
+                         'Expected description_text for {0}: "{1}" != Acual: "{2}"'.format(key,
+                                                                                           expected_description_text,
+                                                                                           actual_description_text))
         self.assertEqual(expected_sub_description_text, actual_sub_description_text,
-                         'Expected sub_description_text for {0}: "{1}" != Acual: "{2}"'.format(key, expected_sub_description_text,
-                                                                   actual_sub_description_text))
+                         'Expected sub_description_text for {0}: "{1}" != Acual: "{2}"'.format(key,
+                                                                                               expected_sub_description_text,
+                                                                                               actual_sub_description_text))
         self.assertEqual(expected_button_text, actual_button_text,
                          'Expected button_text for {0}: "{1}" != Acual: "{2}"'.format(key, expected_button_text,
-                                                                   actual_button_text))
+                                                                                      actual_button_text))
         self.assertEqual(expected_button_text, actual_button_text,
                          'Expected button_text for {0}: "{1}" != Acual: "{2}"'.format(key, expected_button_text,
-                                                                   actual_button_text))
+                                                                                      actual_button_text))
         self.assertEqual(expected_button_text, actual_button_text,
-                         'Expected money for achivement for {0}: "{1}" != Acual: "{2}"'.format(key, expected_money_costs,
-                                                                   actual_money_costs))
+                         'Expected money for achivement for {0}: "{1}" != Acual: "{2}"'.format(key,
+                                                                                               expected_money_costs,
+                                                                                               actual_money_costs))
 
     def test_reg(self):
         self.verify_achive_properties('Register')
@@ -123,12 +125,12 @@ class TestCase(unittest.TestCase):
         self.verify_achive_properties('ShareProgressVK')
 
     def test_game_per_day(self):
-        self.verify_achive_properties('GamePerDay')
+        self.verify_achive_properties('GamePerDay_BO')
 
     @unittest.expectedFailure
     def test_money(self):
         money = TestCase.achives_page.get_money()
-        self.assertRaises(ValueError,int, money)
+        self.assertRaises(ValueError, int, money)
 
     @staticmethod
     def tearDownClass():

@@ -4,7 +4,6 @@
     Module contains
 """
 
-
 from selenium.webdriver.common.keys import Keys
 
 FB_PAGE = 'https://www.facebook.com/'
@@ -25,11 +24,10 @@ ODNOKLASSNIKI_PASSWORD_ID = 'field_password'
 ODNOKLASSNIKI_LOGIN_BUTON_XP = "//input[@value='Log in']"
 ODNOKLASSNIKI_LOGOUT_BUTTON_ID = ''
 
-
-
 FB_SYNONYMS = ['fb', 'Facebook', 'Fb']
 VK_SYNONYMS = ['vk', 'Vkontakte', 'Vk']
 ODNOKLASSNIKI_SYNONYMS = ['Odnoklassniki']
+
 
 class Loginer():
     """
@@ -67,7 +65,6 @@ class Loginer():
         self.driver = driver
         self.login = login
         self.password = password
-
 
 
     def log_in(self):

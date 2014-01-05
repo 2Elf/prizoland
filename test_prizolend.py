@@ -12,12 +12,11 @@ TESTED_URL = 'http://prizoland.com'
 
 
 class TestCase(unittest.TestCase):
-
     @staticmethod
     def setUpClass():
         driver = webdriver.Firefox()
         driver.implicitly_wait(60)
-        loging_instance = Loginer(LOGIN , PASSWORD, SOCIAL_NETWORK,  driver)
+        loging_instance = Loginer(LOGIN, PASSWORD, SOCIAL_NETWORK, driver)
         loging_instance.log_in()
         main_page = MainPage(driver, TESTED_URL)
         main_page.login_with(SOCIAL_NETWORK)
@@ -39,7 +38,7 @@ class TestCase(unittest.TestCase):
     @unittest.expectedFailure
     def test_money(self):
         money = TestCase.achives_page.get_money()
-        self.assertRaises(ValueError,int, money)
+        self.assertRaises(ValueError, int, money)
 
     @staticmethod
     def tearDownClass():
