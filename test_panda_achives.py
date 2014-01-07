@@ -2,10 +2,12 @@
 
 import unittest
 from ConfigParser import SafeConfigParser
+
 from selenium import webdriver
+
 from loginer import Loginer
 from  page_object import MainPage
-import time
+
 
 LOGIN = "79670452475"
 PASSWORD = "C3NPWqjRe"
@@ -15,14 +17,20 @@ CONFIG_PATH = 'achives_data.cfg'
 
 
 class TestCase(unittest.TestCase):
+
     @staticmethod
     def setUpClass():
-        driver = webdriver.Firefox()
+        '''
+            It is running before executing tests.
+            Here we run browser, login to defined social network
+            and go to tested page
+        '''
+        driver = webdriver.Chrome()
         driver.implicitly_wait(60)
         loging_instance = Loginer(LOGIN, PASSWORD, SOCIAL_NETWORK, driver)
         loging_instance.log_in()
         main_page = MainPage(driver, TESTED_URL)
-        main_page = main_page.login_with(SOCIAL_NETWORK)
+        main_page.login_with(SOCIAL_NETWORK)
         panda_main = main_page.go_panda_page()
         TestCase.achives_page = panda_main.continue_quest()
         TestCase.achives_page.skip_explaining()
@@ -31,6 +39,15 @@ class TestCase(unittest.TestCase):
         TestCase.config.read(CONFIG_PATH)
 
     def verify_achive_properties(self, key):
+        '''
+            This function is used by each test.
+
+            It takes 'key' as parameter and use it
+            for getting access to achivement (ACH) in UI and
+            obtaining actual values of properties for current ACH from UI.
+            We use 'key' for obtaining expected results for ACH
+            from config file. And after that we compare actual and expected results.
+        '''
         text_field_name = 'text'
         description_field_name = 'description_text'
         sub_description_field_name = 'sub_description_text'
@@ -48,6 +65,7 @@ class TestCase(unittest.TestCase):
         progress_text = achivement.get_progress_text().encode('utf8')
         #  Use TestCase.config  as config
         config = TestCase.config
+
         #  Print all actual properties of current achivement
         print key
         print 'Text: {}'.format(actual_text)
@@ -58,6 +76,7 @@ class TestCase(unittest.TestCase):
         print 'Progress item_text: {0}'.format(progress_text)
         print 'Completed: {0}'.format(achivement.is_completed())
         print ''
+
         #  Check if config file doesn't contain section for current achivement
         #  we create it, write there actual results and fail test for validate
         #  results we got to the config file
@@ -71,40 +90,40 @@ class TestCase(unittest.TestCase):
             with open(CONFIG_PATH, 'wb') as configfile:
                 config.write(configfile)
             self.fail('Config file doesn\'t contain values for achivment with {0} data-key'
-            .format(key))
-            #  Get expected results from config file
+                      .format(key))
+
+        #  Get expected results from config file
         expected_text = config.get(key, text_field_name)
         expected_description_text = config.get(key, description_field_name)
         expected_sub_description_text = config.get(key, sub_description_field_name)
         expected_button_text = config.get(key, button_field_name)
         expected_money_costs = config.get(key, money_field_name)
-        #  If achivement is completed, we will gain empty values
-        #  for button and money
+
+        # If achivement is completed, we will gain empty values
+        # for button and money.
         if achivement.is_completed():
             expected_button_text = ''
             expected_money_costs = ''
-            #  compare actual and expected results
+
+        # Compare actual and expected results.
         self.assertEqual(expected_text, actual_text,
-                         'Expected text for {0}: "{1}" != Acual: "{2}"'.format(key, expected_text,
-                                                                               actual_text))
+                         'Expected text for {0}:\n "{1}" != Acual: "{2}"'\
+                        .format(key, expected_text, actual_text))
         self.assertEqual(expected_description_text, actual_description_text,
-                         'Expected description_text for {0}: "{1}" != Acual: "{2}"'.format(key,
-                                                                                           expected_description_text,
-                                                                                           actual_description_text))
+                         'Expected description_text for {0}:\n "{1}" != Acual: "{2}"'\
+                         .format(key, expected_description_text, actual_description_text))
         self.assertEqual(expected_sub_description_text, actual_sub_description_text,
-                         'Expected sub_description_text for {0}: "{1}" != Acual: "{2}"'.format(key,
-                                                                                               expected_sub_description_text,
-                                                                                               actual_sub_description_text))
+                         'Expected sub_description_text for {0}:\n "{1}" != Acual: "{2}"'\
+                         .format(key, expected_sub_description_text, actual_sub_description_text))
         self.assertEqual(expected_button_text, actual_button_text,
-                         'Expected button_text for {0}: "{1}" != Acual: "{2}"'.format(key, expected_button_text,
-                                                                                      actual_button_text))
+                         'Expected button_text for {0}: "{1}" != Acual:\n "{2}"'\
+                         .format(key, expected_button_text, actual_button_text))
         self.assertEqual(expected_button_text, actual_button_text,
-                         'Expected button_text for {0}: "{1}" != Acual: "{2}"'.format(key, expected_button_text,
-                                                                                      actual_button_text))
+                         'Expected button_text for {0}: "{1}" != Acual:\n "{2}"'\
+                         .format(key, expected_button_text, actual_button_text))
         self.assertEqual(expected_button_text, actual_button_text,
-                         'Expected money for achivement for {0}: "{1}" != Acual: "{2}"'.format(key,
-                                                                                               expected_money_costs,
-                                                                                               actual_money_costs))
+                         'Expected money for achivement for {0}:\n "{1}" != Acual: "{2}"'\
+                         .format(key, expected_money_costs, actual_money_costs))
 
     def test_reg(self):
         self.verify_achive_properties('Register')
@@ -134,11 +153,12 @@ class TestCase(unittest.TestCase):
 
     @staticmethod
     def tearDownClass():
+        '''
+            It executes after running all tests,
+            we close browser.
+        '''
         TestCase.driver.close()
 
 
 if __name__ == '__main__':
     unittest.main()
-
-
-

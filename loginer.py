@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 """
-    Module contains
+    Module contains class that
+    can log in into list of social networks:
+    Vk, facebook, odnoclassniki
 """
 
 from selenium.webdriver.common.keys import Keys
@@ -91,8 +93,3 @@ class Loginer():
             return True
         except:
             return False
-
-
-
-
-
