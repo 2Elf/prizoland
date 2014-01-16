@@ -5,15 +5,21 @@ from ConfigParser import SafeConfigParser
 
 from selenium import webdriver
 
-from loginer import Loginer
-from  page_object import MainPage
+from prizoland.loginer import Loginer
+from  prizoland.page_object import MainPage
 
 
 LOGIN = "79670452475"
 PASSWORD = "C3NPWqjRe"
 SOCIAL_NETWORK = 'vk'
-TESTED_URL = 'http://prizoland.com'
+# TESTED_URL = 'http://rc.prizoland.com'
+TESTED_URL = 'http:viotest.local:8000'
 CONFIG_PATH = 'achives_data.cfg'
+ACHIVES_KEYS = ['Register', 'Install', 'BO1_FirstLevel',
+                'BO1_PlatinumPanda', 'BO2_ActivePanda',
+                'ShareProgressVK', 'GamePerDay_BO']
+
+
 
 
 class TestCase(unittest.TestCase):
@@ -38,7 +44,7 @@ class TestCase(unittest.TestCase):
         TestCase.config = SafeConfigParser()
         TestCase.config.read(CONFIG_PATH)
 
-    def verify_achive_properties(self, key):
+    def verify_achive_properties(self, id):
         '''
             This function is used by each test.
 
@@ -56,7 +62,7 @@ class TestCase(unittest.TestCase):
 
         #  Find achivement by key and get all actual properties for it
         #  encode all values to utf-8 from unicode
-        achivement = TestCase.achives_page.find_echivement_by_key(key)
+        achivement = TestCase.achives_page.find_echivement_by_key(id)
         actual_text = achivement.get_text().encode('utf8')
         actual_description_text = achivement.get_description_text().encode('utf8')
         actual_sub_description_text = achivement.get_sub_description_text().encode('utf8')
@@ -67,7 +73,7 @@ class TestCase(unittest.TestCase):
         config = TestCase.config
 
         #  Print all actual properties of current achivement
-        print key
+        print id
         print 'Text: {}'.format(actual_text)
         print 'Description: {0}'.format(actual_description_text)
         print 'Sub description: {0}'.format(actual_sub_description_text)
@@ -80,24 +86,24 @@ class TestCase(unittest.TestCase):
         #  Check if config file doesn't contain section for current achivement
         #  we create it, write there actual results and fail test for validate
         #  results we got to the config file
-        if not config.has_section(key):
-            config.add_section(key)
-            config.set(key, text_field_name, actual_text)
-            config.set(key, description_field_name, actual_description_text)
-            config.set(key, sub_description_field_name, actual_sub_description_text)
-            config.set(key, button_field_name, actual_button_text)
-            config.set(key, money_field_name, actual_money_costs)
+        if not config.has_section(id):
+            config.add_section(id)
+            config.set(id, text_field_name, actual_text)
+            config.set(id, description_field_name, actual_description_text)
+            config.set(id, sub_description_field_name, actual_sub_description_text)
+            config.set(id, button_field_name, actual_button_text)
+            config.set(id, money_field_name, actual_money_costs)
             with open(CONFIG_PATH, 'wb') as configfile:
                 config.write(configfile)
-            self.fail('Config file doesn\'t contain values for achivment with {0} data-key'
-                      .format(key))
+            self.fail('Config file doesn\'t contain values for achivment with {0} data-id'
+                      .format(id))
 
         #  Get expected results from config file
-        expected_text = config.get(key, text_field_name)
-        expected_description_text = config.get(key, description_field_name)
-        expected_sub_description_text = config.get(key, sub_description_field_name)
-        expected_button_text = config.get(key, button_field_name)
-        expected_money_costs = config.get(key, money_field_name)
+        expected_text = config.get(id, text_field_name)
+        expected_description_text = config.get(id, description_field_name)
+        expected_sub_description_text = config.get(id, sub_description_field_name)
+        expected_button_text = config.get(id, button_field_name)
+        expected_money_costs = config.get(id, money_field_name)
 
         # If achivement is completed, we will gain empty values
         # for button and money.
@@ -108,43 +114,44 @@ class TestCase(unittest.TestCase):
         # Compare actual and expected results.
         self.assertEqual(expected_text, actual_text,
                          'Expected text for {0}:\n "{1}" != Acual: "{2}"'\
-                        .format(key, expected_text, actual_text))
+                        .format(id, expected_text, actual_text))
         self.assertEqual(expected_description_text, actual_description_text,
                          'Expected description_text for {0}:\n "{1}" != Acual: "{2}"'\
-                         .format(key, expected_description_text, actual_description_text))
+                         .format(id, expected_description_text, actual_description_text))
         self.assertEqual(expected_sub_description_text, actual_sub_description_text,
                          'Expected sub_description_text for {0}:\n "{1}" != Acual: "{2}"'\
-                         .format(key, expected_sub_description_text, actual_sub_description_text))
+                         .format(id, expected_sub_description_text, actual_sub_description_text))
         self.assertEqual(expected_button_text, actual_button_text,
                          'Expected button_text for {0}: "{1}" != Acual:\n "{2}"'\
-                         .format(key, expected_button_text, actual_button_text))
+                         .format(id, expected_button_text, actual_button_text))
         self.assertEqual(expected_button_text, actual_button_text,
                          'Expected button_text for {0}: "{1}" != Acual:\n "{2}"'\
-                         .format(key, expected_button_text, actual_button_text))
+                         .format(id, expected_button_text, actual_button_text))
         self.assertEqual(expected_button_text, actual_button_text,
                          'Expected money for achivement for {0}:\n "{1}" != Acual: "{2}"'\
-                         .format(key, expected_money_costs, actual_money_costs))
+                         .format(id, expected_money_costs, actual_money_costs))
+
 
     def test_reg(self):
-        self.verify_achive_properties('Register')
+        self.verify_achive_properties('46')
 
     def test_first_gaming(self):
-        self.verify_achive_properties('Install')
+        self.verify_achive_properties('47')
 
     def test_first_level(self):
-        self.verify_achive_properties('BO1_FirstLevel')
+        self.verify_achive_properties('48')
 
     def test_autumn_legend(self):
-        self.verify_achive_properties('BO1_PlatinumPanda')
+        self.verify_achive_properties('49')
 
-    def test_active_panda(self):
-        self.verify_achive_properties('BO2_ActivePanda')
-
-    def test_share_progress(self):
-        self.verify_achive_properties('ShareProgressVK')
-
-    def test_game_per_day(self):
-        self.verify_achive_properties('GamePerDay_BO')
+    # def test_active_panda(self):
+    #     self.verify_achive_properties('BO2_ActivePanda')
+    #
+    # def test_share_progress(self):
+    #     self.verify_achive_properties('ShareProgressVK')
+    #
+    # def test_game_per_day(self):
+    #     self.verify_achive_properties('GamePerDay1')
 
     @unittest.expectedFailure
     def test_money(self):

@@ -88,8 +88,8 @@ class Loginer():
             self.driver.find_element_by_id(self.logout_element)
             #  open new tab for tests after login
             # time.sleep(5)
-            body = self.driver.find_element_by_tag_name('body')
-            body.send_keys(Keys.CONTROL + 't')
+            # body = self.driver.find_element_by_tag_name('body')
+            # body.send_keys(Keys.CONTROL + 't')
             return True
         except:
             return False

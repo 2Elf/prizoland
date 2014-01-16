@@ -211,7 +211,7 @@ class Achivement:
             get_button_text() - return button text
             is_completed - return if achivement is completed
     '''
-    achivement_key_xpath_pattern = "//article[@data-key='{0}']"
+    achivement_id_xpath_pattern = "//article[@data-id='{0}']"
     description_css_selector = 'div.achievement__description.ng-binding'
     sub_description_css_selector = 'div.achievement__sub-description.ng-binding'
     progress_class_name = 'icon-timed__inner'
@@ -219,9 +219,13 @@ class Achivement:
     button_tag_name = 'button'
     class_value_completed = 'achievement_state_completed'
 
-    def __init__(self, driver, key):
+    def __init__(self, driver, id):
         self.driver = driver
-        self.ref = driver.find_element_by_xpath(Achivement.achivement_key_xpath_pattern.format(key))
+        try:
+            xpath = Achivement.achivement_id_xpath_pattern.format(id)
+            self.ref = driver.find_element_by_xpath(xpath)
+        except NoSuchElementException as err:
+            raise NameError('Got {0} when try detect {1}'.format(err, xpath))
         self.class_value = self.ref.get_attribute('class')
         self.text = self.ref.text
         # Over on achivement to get overlay data (description, sub_description, button).
@@ -289,4 +293,3 @@ class Achivement:
     def is_completed(self):
         '''Return if achivement is completed'''
         return Achivement.class_value_completed in self.class_value
-
