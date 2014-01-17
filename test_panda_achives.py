@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+import logging
 from ConfigParser import SafeConfigParser
 
 from selenium import webdriver
@@ -12,14 +13,14 @@ from  prizoland.page_object import MainPage
 LOGIN = "79670452475"
 PASSWORD = "C3NPWqjRe"
 SOCIAL_NETWORK = 'vk'
-# TESTED_URL = 'http://rc.prizoland.com'
-TESTED_URL = 'http:viotest.local:8000'
+TESTED_URL = 'http://rc.prizoland.com'
+# TESTED_URL = 'http:viotest.local:8000'
 CONFIG_PATH = 'achives_data.cfg'
 ACHIVES_KEYS = ['Register', 'Install', 'BO1_FirstLevel',
                 'BO1_PlatinumPanda', 'BO2_ActivePanda',
                 'ShareProgressVK', 'GamePerDay_BO']
 
-
+logging.basicConfig(level=logging.INFO)
 
 
 class TestCase(unittest.TestCase):
@@ -31,7 +32,7 @@ class TestCase(unittest.TestCase):
             Here we run browser, login to defined social network
             and go to tested page
         '''
-        driver = webdriver.Chrome()
+        driver = webdriver.Firefox()
         driver.implicitly_wait(60)
         loging_instance = Loginer(LOGIN, PASSWORD, SOCIAL_NETWORK, driver)
         loging_instance.log_in()
