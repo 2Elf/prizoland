@@ -108,6 +108,7 @@ class MainPage(PagePattern):
         self.driver.find_element_by_link_text(MainPage.panda_continue_link_text).click()
         return PandaMain(self.driver)
 
+
 class QuestMain(PagePattern):
     '''
        It gather common functions for quest
@@ -170,7 +171,7 @@ class AchivesPage(PagePattern):
     def skip_explaining(self):
         '''
             It skips message with explaining
-            how it works
+            how user earn his virtual money
         '''
         link = AchivesPage.skip_link_text
         try:
@@ -202,14 +203,14 @@ class Achivement:
         properties and methods we can do with it.
 
         Methods:
-            get_ref() - return achivement element
+            get_ref() - return achivement element (selenium element object)
             get_text() - return achivement text
-            get_money_cost() - return text money for achivement
+            get_money_cost() - return money for achivement in string
             get_progress_text() - return progress text
             get_description_text() - return description text
             get_sub_description_text() - return sub description text
             get_button_text() - return button text
-            is_completed - return if achivement is completed
+            is_completed - return if achivement is completed (boolean)
     '''
     achivement_id_xpath_pattern = "//article[@data-id='{0}']"
     description_css_selector = 'div.achievement__description.ng-binding'
@@ -226,6 +227,7 @@ class Achivement:
             self.ref = driver.find_element_by_xpath(xpath)
         except NoSuchElementException as err:
             raise NameError('Got {0} when try detect {1}'.format(err, xpath))
+
         self.class_value = self.ref.get_attribute('class')
         self.text = self.ref.text
         # Over on achivement to get overlay data (description, sub_description, button).
@@ -233,10 +235,10 @@ class Achivement:
         actions.move_to_element(self.ref).perform()
         actions.release(self.ref).perform()
         actions.move_to_element(self.ref).perform()
-        self.description = self.ref.find_element_by_css_selector( \
-            Achivement.description_css_selector)
-        self.sub_description = self.ref.find_element_by_css_selector( \
-            Achivement.sub_description_css_selector)
+        self.description = self.ref.find_element_by_css_selector(
+                                Achivement.description_css_selector)
+        self.sub_description = self.ref.find_element_by_css_selector(
+                                    Achivement.sub_description_css_selector)
         actions.release(self.ref).perform()
         actions.move_to_element(self.ref).perform()
         self.progress_icon = self.ref.find_element_by_class_name(Achivement.progress_class_name)

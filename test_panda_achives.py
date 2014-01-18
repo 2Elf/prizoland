@@ -8,20 +8,18 @@ from selenium import webdriver
 
 from prizoland.loginer import Loginer
 from  prizoland.page_object import MainPage
+from conf import settings
 
 
-LOGIN = "79670452475"
-PASSWORD = "C3NPWqjRe"
-SOCIAL_NETWORK = 'vk'
-TESTED_URL = 'http://rc.prizoland.com'
-# TESTED_URL = 'http:viotest.local:8000'
-CONFIG_PATH = 'achives_data.cfg'
-ACHIVES_KEYS = ['Register', 'Install', 'BO1_FirstLevel',
-                'BO1_PlatinumPanda', 'BO2_ActivePanda',
-                'ShareProgressVK', 'GamePerDay_BO']
+LOGIN = settings['login']
+PASSWORD = settings['password']
+SOCIAL_NETWORK = settings['social_network']
+# TESTED_URL = 'http://rc.prizoland.com'
+TESTED_URL = 'http:{0}:{1}'.format(settings['host'],
+                                   settings['port'] )
+CONFIG_PATH = settings['storage']
 
-logging.basicConfig(level=logging.INFO)
-
+logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
 class TestCase(unittest.TestCase):
 
@@ -70,19 +68,19 @@ class TestCase(unittest.TestCase):
         actual_button_text = achivement.get_button_text().encode('utf8')
         actual_money_costs = achivement.get_money_cost().encode('utf8')
         progress_text = achivement.get_progress_text().encode('utf8')
+
         #  Use TestCase.config  as config
         config = TestCase.config
 
         #  Print all actual properties of current achivement
-        print id
-        print 'Text: {}'.format(actual_text)
-        print 'Description: {0}'.format(actual_description_text)
-        print 'Sub description: {0}'.format(actual_sub_description_text)
-        print 'Button_text: {0}'.format(actual_button_text)
-        print 'Bottom_text: {0}'.format(actual_money_costs)
-        print 'Progress item_text: {0}'.format(progress_text)
-        print 'Completed: {0}'.format(achivement.is_completed())
-        print ''
+        logging.debug('\nAchivement id: {0}'.format(id))
+        logging.debug('Text: {0}'.format(actual_text))
+        logging.debug('Description: {0}'.format(actual_description_text))
+        logging.debug('Sub description: {0}'.format(actual_sub_description_text))
+        logging.debug('Button_text: {0}'.format(actual_button_text))
+        logging.debug('Bottom_text: {0}'.format(actual_money_costs))
+        logging.debug('Progress item_text: {0}'.format(progress_text))
+        logging.debug('Completed: {0}'.format(achivement.is_completed()))
 
         #  Check if config file doesn't contain section for current achivement
         #  we create it, write there actual results and fail test for validate
@@ -115,7 +113,7 @@ class TestCase(unittest.TestCase):
         # Compare actual and expected results.
         self.assertEqual(expected_text, actual_text,
                          'Expected text for {0}:\n "{1}" != Acual: "{2}"'\
-                        .format(id, expected_text, actual_text))
+                          .format(id, expected_text, actual_text))
         self.assertEqual(expected_description_text, actual_description_text,
                          'Expected description_text for {0}:\n "{1}" != Acual: "{2}"'\
                          .format(id, expected_description_text, actual_description_text))
@@ -166,7 +164,3 @@ class TestCase(unittest.TestCase):
             we close browser.
         '''
         TestCase.driver.close()
-
-
-if __name__ == '__main__':
-    unittest.main()
