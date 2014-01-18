@@ -1,6 +1,3 @@
-import os.path
-
-
 class MainConfig(object):
     """
     Main configuration object
@@ -17,7 +14,7 @@ class MainConfig(object):
         }
 
     HOST = 'viotest.local'
-    PORT = '8000'
+    PORT = 8000
 
     #  social network auth data
     LOGIN = "79670452475"
