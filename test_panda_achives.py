@@ -21,7 +21,7 @@ CONFIG_PATH = settings['storage']
 
 logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
-class TestCase(unittest.TestCase):
+class SmokeTestCase(unittest.TestCase):
 
     @staticmethod
     def setUpClass():
