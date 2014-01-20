@@ -37,8 +37,10 @@ class TestCase(unittest.TestCase):
         main_page = MainPage(driver, TESTED_URL)
         main_page.login_with(SOCIAL_NETWORK)
         panda_main = main_page.go_panda_page()
-        TestCase.achives_page = panda_main.continue_quest()
-        TestCase.achives_page.skip_explaining()
+        achives_page = panda_main.continue_quest()
+        achives_page.handle_new_achives()
+        achives_page.skip_explaining()
+        TestCase.achives_page = achives_page
         TestCase.driver = driver
         TestCase.config = SafeConfigParser()
         TestCase.config.read(CONFIG_PATH)

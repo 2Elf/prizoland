@@ -1,9 +1,15 @@
 # -*- coding: utf-8 -*-
 
+import logging
+import time
+
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 
+
+DEFAULT_IMPLICITY_WAIT = 60
+SMALL_IMPLICITY_WAIT = 5
 
 class PagePattern():
     '''
@@ -100,14 +106,64 @@ class MainPage(PagePattern):
 
     def go_panda_page(self):
         '''
-            It click on reference to continue 'Panda' quest
-            and goes to bubble quest page.
+            First we try begin quest and click on
+            button 'Начать'.
+            If it is not evailable we try click
+            button "Продолжить"
 
             It returns instance of PandaMain class
         '''
-        self.driver.find_element_by_link_text(MainPage.panda_continue_link_text).click()
+        begin_link_text = MainPage.panda_begin_link_text
+        continue_link_text = MainPage.panda_continue_link_text
+        self.driver.implicitly_wait(SMALL_IMPLICITY_WAIT)
+        try:
+            self.driver.find_element_by_link_text(begin_link_text).click()
+        except NoSuchElementException:
+            self.driver.find_element_by_link_text(continue_link_text).click()
+        self.driver.implicitly_wait(DEFAULT_IMPLICITY_WAIT)
+            # logging.DEBUG('We got NoSuchElementException on finding {0}'
+            #               .format(begin_link_text))
+        logging.info('We went to Panda quest page ')
         return PandaMain(self.driver)
 
+class ChoosePage(PagePattern):
+    '''
+        Class gather methods available on
+        choose page
+    '''
+    continue_link_xpath = '''//button[@ng-click="choose_continue('/BubbleOrigins/play/')"]'''
+    prize_group_xpath = '//div[@class="choose__group group_order_{0}"]'
+    priz_image_class = 'prize__image'
+    choose_button_class = 'button'
+
+    def __init__(self, driver):
+        PagePattern.__init__(self, driver)
+        self.new_choose = 'choose-prizes' in self.driver.current_url
+        if self.new_choose:
+            self.prises_choosen = True
+
+    def choose_prizes(self):
+        '''
+        It choose three first prizes in the list
+        '''
+        for group_id in range(1,4):
+            grop_xpath = ChoosePage.prize_group_xpath.format(group_id)
+            group = self.driver.find_element_by_xpath(grop_xpath)
+            prize_element = group.find_element_by_class_name(ChoosePage.priz_image_class)
+            self.mouse_over_on(prize_element)
+            group.find_element_by_class_name(ChoosePage.choose_button_class).click()
+
+    def continue_with_it(self):
+        '''
+        It click on  'Продолжить' link
+        after prizes choosing.
+        '''
+        if self.new_choose:
+            self.driver.find_element_by_xpath(ChoosePage.continue_link_xpath).click()
+        else:
+            self.choose_prizes()
+
+        return self
 
 class QuestMain(PagePattern):
     '''
@@ -128,6 +184,11 @@ class QuestMain(PagePattern):
             of AchivesPage class.
         '''
         self.driver.find_element_by_link_text(QuestMain.continue_link_text).click()
+        time.sleep(SMALL_IMPLICITY_WAIT)
+        if 'choose' in self.driver.current_url:
+            choose_page = ChoosePage(self.driver)
+            choose_page.continue_with_it()
+
         return AchivesPage(self.driver)
 
 
@@ -163,10 +224,42 @@ class AchivesPage(PagePattern):
     '''
     skip_link_text = 'пропустить'
     money_element_xpath = '//span[@tokenanim="userTokens"]'
+    achives_popup_xpath = '//div[@class="dialogs dialogs_type_done-tasks"]'
+    exelent_link_tag = 'button'
 
     def __init__(self, driver):
         PagePattern.__init__(self, driver)
         self.is_logged = False
+
+    def handle_new_achives(self):
+        '''
+           It waits for new achives
+           and click on 'Отлично' button.
+        '''
+        self.driver.implicitly_wait(SMALL_IMPLICITY_WAIT)
+        handled = False
+        count = 0
+        while not handled:
+            count += 1
+            try:
+                achives_popup = self.driver.find_element_by_xpath(AchivesPage.achives_popup_xpath)
+                exelent_link = achives_popup.find_element_by_tag_name(AchivesPage.exelent_link_tag)
+                counter = 0
+                while not exelent_link.is_displayed():
+                    counter += 1
+                    time.sleep(1)
+                    if counter >=DEFAULT_IMPLICITY_WAIT:
+                        break
+                exelent_link.click()
+                handled = True
+            except:
+                logging.info("Pop up on new achives doesn't appear or wos not found")
+            self.driver.refresh()
+            if count == 2:
+               break
+        self.driver.implicitly_wait(DEFAULT_IMPLICITY_WAIT)
+        return handled
+
 
     def skip_explaining(self):
         '''
@@ -177,7 +270,7 @@ class AchivesPage(PagePattern):
         try:
             self.driver.find_element_by_link_text(link).click()
         except NoSuchElementException:
-            print 'Link {0} was not found'.format(link.encode())
+            logging.debug('Link {0} was not found'.format(link))
         return self
 
     def find_echivement_by_key(self, data_key):

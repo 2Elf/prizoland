@@ -11,7 +11,7 @@ workon integration
 pip install -r requirements.txt
 ```
 
-Selenium тесты выполняются в Firefox, выполним установку если оный отсутствует в системе:
+Selenium тесты выполняются в Firefox, выполним установку, если оный отсутствует в системе:
 
 ```bash
 sudo apt-get install firefox
